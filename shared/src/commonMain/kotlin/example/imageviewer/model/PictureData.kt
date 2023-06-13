@@ -48,6 +48,41 @@ sealed interface PictureData {
                 return "$dayStr $monthStr."
             }
     }
+
+
+
+    @Serializable
+    data class Pokemon(
+        val id: String,
+        override val name: String,
+        override val description: String,
+        var imageUrl: String,
+    ) : PictureData {
+        override val gps: GpsPosition
+            get(): GpsPosition {
+                return GpsPosition(43.6047, 1.4442)
+            }
+        override val dateString: String
+            get(): String {
+                return "now."
+            }
+    }
+
+    @Serializable
+    data class WildstagramPicture(
+        override val name: String,
+        override val description: String,
+        var imageUrl: String,
+    ) : PictureData {
+        override val gps: GpsPosition
+            get(): GpsPosition {
+                return GpsPosition(43.6047, 1.4442)
+            }
+        override val dateString: String
+            get(): String {
+                return "now."
+            }
+    }
 }
 
 fun createCameraPictureData(name: String, description: String, gps: GpsPosition) =

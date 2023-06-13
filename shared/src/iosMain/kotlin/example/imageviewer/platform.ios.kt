@@ -32,6 +32,17 @@ private val iosNotchInset = object : WindowInsets {
     override fun getBottom(density: Density): Int = 0
 }
 
+actual suspend fun readFile(path: String): ByteArray {
+    val nsdata = NSData.create(contentsOfFile = path)
+    if (nsdata != null){
+        val byteArray = toByteArray(nsData = nsdata)
+        byteArray.freeze()
+        return byteArray
+    } else {
+        throw Exception("file not found!")
+    }
+}
+
 actual fun Modifier.notchPadding(): Modifier =
     this.windowInsetsPadding(iosNotchInset)
 

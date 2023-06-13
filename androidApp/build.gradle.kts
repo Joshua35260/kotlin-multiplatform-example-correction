@@ -11,6 +11,8 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":shared"))
+
+                implementation("org.jetbrains.skiko:skiko-awt-runtime-linux-arm64:0.7.9")
             }
         }
     }
@@ -28,6 +30,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    packagingOptions {
+        // pickFirst("META-INF/*")
+        exclude("META-INF/DEPENDENCIES")
     }
 }
 

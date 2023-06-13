@@ -6,23 +6,73 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.ImageBitmap
 import example.imageviewer.filter.PlatformContext
 import example.imageviewer.model.*
+import example.imageviewer.service.PokemonService
+import example.imageviewer.service.WildstagramService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
+
+suspend fun fetchPokemons(): List<PictureData.Pokemon> {
+    val service = PokemonService()
+    return service.getAll()
+}
 
 @OptIn(ExperimentalResourceApi::class)
 abstract class Dependencies {
     abstract val notification: Notification
     abstract val imageStorage: ImageStorage
     abstract val sharePicture: SharePicture
+
     val pictures: SnapshotStateList<PictureData> = mutableStateListOf(*resourcePictures)
+
+    constructor() {
+        GlobalScope.async {
+
+            try {
+                println("START FETCH POKEMONS")
+                var pokemons: List<PictureData.Pokemon> = fetchPokemons()
+                println("POKEMONS returned - " + pokemons)
+                pictures.addAll(0, pokemons)
+                println("POKEMONS added")
+
+            } catch (e: Exception) {
+                e.printStackTrace();
+                println("error fetching pokemons")
+                throw e // cancellation exception is rethrown, yet the original IOException gets to the handler
+            }
+        }
+
+        GlobalScope.async {
+            try {
+                println("START FETCH WILDSTAGRAM")
+                val wildstagramService = WildstagramService()
+                var wilderPictures: List<PictureData.WildstagramPicture> = wildstagramService.getAll()
+                pictures.addAll(0, pokemons)
+//                println("POKEMONS returned - " + pokemons)
+//                pictures.addAll(0, pokemons)
+//                println("POKEMONS added")
+
+            } catch (e: Exception) {
+                e.printStackTrace();
+                println("error fetching wildstagram")
+                throw e // cancellation exception is rethrown, yet the original IOException gets to the handler
+            }
+        }
+    }
+
     open val externalEvents: Flow<ExternalImageViewerEvent> = emptyFlow()
     val localization: Localization = getCurrentLocalization()
     val imageProvider: ImageProvider = object : ImageProvider {
         override suspend fun getImage(picture: PictureData): ImageBitmap = when (picture) {
             is PictureData.Resource -> {
                 resource(picture.resource).readBytes().toImageBitmap()
+            }
+
+            is PictureData.Pokemon -> {
+                loadPicture(picture.imageUrl)
             }
 
             is PictureData.Camera -> {
@@ -33,6 +83,10 @@ abstract class Dependencies {
         override suspend fun getThumbnail(picture: PictureData): ImageBitmap = when (picture) {
             is PictureData.Resource -> {
                 resource(picture.thumbnailResource).readBytes().toImageBitmap()
+            }
+
+            is PictureData.Pokemon -> {
+                loadPicture(picture.imageUrl)
             }
 
             is PictureData.Camera -> {
@@ -54,6 +108,15 @@ abstract class Dependencies {
         override fun edit(picture: PictureData, name: String, description: String): PictureData {
             when (picture) {
                 is PictureData.Resource -> {
+                    val edited = picture.copy(
+                        name = name,
+                        description = description,
+                    )
+                    pictures[pictures.indexOf(picture)] = edited
+                    return edited
+                }
+
+                is PictureData.Pokemon -> {
                     val edited = picture.copy(
                         name = name,
                         description = description,

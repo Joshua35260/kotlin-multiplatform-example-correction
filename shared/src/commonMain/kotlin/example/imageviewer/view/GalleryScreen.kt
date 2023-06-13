@@ -152,7 +152,7 @@ fun GalleryScreen(
             )
         }
         Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-            Text("pas sur la")
+            Text("De la place pour ce texte")
 
         }
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {

@@ -7,6 +7,9 @@ plugins {
     id("org.jetbrains.compose")
     kotlin("plugin.serialization")
     id("kotlin-parcelize")
+
+//    kotlin("plugin.serialization") version "1.8.21"
+    id("com.squareup.sqldelight")
 }
 
 version = "1.0-SNAPSHOT"
@@ -30,6 +33,13 @@ kotlin {
             "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
 
+    val ktorVersion = "2.2.4"
+    val sqlDelightVersion = "1.5.5"
+    val dateTimeVersion = "0.4.0"
+    val log4jVersion = "2.11.2"
+
+
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -44,6 +54,16 @@ kotlin {
 
                 // Kotlin Coroutines 1.7.1 contains Dispatchers.IO for iOS
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$dateTimeVersion")
+
+                implementation("org.apache.logging.log4j:log4j:$log4jVersion")
+                implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
+
             }
         }
         val androidMain by getting {
@@ -58,6 +78,9 @@ kotlin {
                 implementation("com.google.android.gms:play-services-maps:18.1.0")
                 implementation("com.google.android.gms:play-services-location:21.0.1")
                 implementation("com.google.maps.android:maps-compose:2.11.2")
+
+                implementation("io.ktor:ktor-client-android:$ktorVersion")
+                implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
             }
         }
         val iosMain by getting {
@@ -89,5 +112,15 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    packagingOptions {
+        // pickFirst("META-INF/*")
+        exclude("META-INF/DEPENDENCIES")
+    }
+}
+
+sqldelight {
+    database("ImageViewerDatabase") {
+        packageName = "com.jetbrains.handson.kmm.shared.cache"
     }
 }

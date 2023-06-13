@@ -11,6 +11,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.scale
 import example.imageviewer.ImageStorage
 import example.imageviewer.PlatformStorableImage
+import example.imageviewer.loadPicture
 import example.imageviewer.model.PictureData
 import example.imageviewer.toImageBitmap
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +24,8 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.resource
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 private const val maxStorableImageSizePx = 2000
 private const val storableThumbnailSizePx = 200
@@ -97,6 +100,8 @@ class AndroidImageStorage(
             picture.thumbnailJpgFile.readBytes().toImageBitmap()
         }
 
+
+    @java.lang.Override
     override suspend fun getImage(picture: PictureData.Camera): ImageBitmap =
         withContext(ioScope.coroutineContext) {
             picture.jpgFile.readBytes().toImageBitmap()
@@ -111,6 +116,15 @@ class AndroidImageStorage(
         when (picture) {
             is PictureData.Camera -> {
                 picture.jpgFile.copyTo(tempFileToShare, overwrite = true)
+            }
+
+            is PictureData.Pokemon -> {
+                var pictureImage = loadPicture(picture.imageUrl)
+
+                val stream: OutputStream = FileOutputStream(tempFileToShare)
+                pictureImage.asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG,25,stream)
+                stream.flush()
+                stream.close()
             }
 
             is PictureData.Resource -> {
