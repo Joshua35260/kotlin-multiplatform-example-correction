@@ -1,4 +1,3 @@
-
 package example.imageviewer.service
 
 import androidx.compose.ui.graphics.ImageBitmap
@@ -52,7 +51,13 @@ class WildstagramService {
         }.body()
         println("pictureNames =>  " + pictureNames)
 
-        return pictureNames.map { pictureName -> PictureData.WildstagramPicture(pictureName, "Wilder image: $pictureName", url + "/" + pictureName) }
+        return pictureNames.map { pictureName ->
+            PictureData.WildstagramPicture(
+                pictureName,
+                "Wilder image: $pictureName",
+                url + "/files/" + pictureName
+            )
+        }
     }
 
     val token = "bfd28f71-a745-4a48-9d59-248498b39dfb"
@@ -60,34 +65,34 @@ class WildstagramService {
         println("PokemonService: will POST  on " + url)
 
         try {
-            val bytes:ByteArray = imageBitmap.toByteArray();
-        // val bytes:ByteArray = readFile("/tmp/my.jpg")
+            val bytes: ByteArray = imageBitmap.toByteArray();
+            // val bytes:ByteArray = readFile("/tmp/my.jpg")
 
-        println("SEND UPLOAD")
-        val response: HttpResponse = httpClient.post(url + "/upload") {
-            headers {
-                append(HttpHeaders.Authorization, "Bearer ${token}")
-            }
-            //timeout ( 1000 )
-            setBody(
-                MultiPartFormDataContent(
-                    formData {
-                        append("name", "louis")
-                        append("fileData", bytes, Headers.build {
-                            append(HttpHeaders.ContentType, "image/jpeg")
-                            append(HttpHeaders.ContentDisposition, "filename=\"louis.jpg\"")
-                            append(HttpHeaders.ContentLength, bytes.size)
-                        })
-                    },
-                    boundary = "WCSWebAppBoundary"
+            println("SEND UPLOAD")
+            val response: HttpResponse = httpClient.post(url + "/upload") {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer ${token}")
+                }
+                //timeout ( 1000 )
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+                            append("name", "louis")
+                            append("fileData", bytes, Headers.build {
+                                append(HttpHeaders.ContentType, "image/jpeg")
+                                append(HttpHeaders.ContentDisposition, "filename=\"louis.jpg\"")
+                                append(HttpHeaders.ContentLength, bytes.size)
+                            })
+                        },
+                        boundary = "WCSWebAppBoundary"
+                    )
                 )
-            )
-            onUpload { bytesSentTotal, contentLength ->
-                println("Sent $bytesSentTotal bytes from $contentLength")
+                onUpload { bytesSentTotal, contentLength ->
+                    println("Sent $bytesSentTotal bytes from $contentLength")
+                }
             }
-        }
 
-        println("SENT UPLOAD - CODE=" + response.status)
+            println("SENT UPLOAD - CODE=" + response.status)
         } catch (e: Exception) {
             println("EXCEPTION " + e)
             e.printStackTrace()

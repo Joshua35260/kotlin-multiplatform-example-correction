@@ -39,11 +39,17 @@ actual val isShareFeatureSupported: Boolean = true
 actual val shareIcon: ImageVector = Icons.Filled.Share
 
 actual suspend fun loadPicture(url: String): ImageBitmap {
-    val httpClient = HttpClient()
-    val image: ByteArray = httpClient.use { client ->
-        client.get(url).body()
+    try {
+        val httpClient = HttpClient()
+        val image: ByteArray = httpClient.use { client ->
+            client.get(url).body()
+        }
+        return image.toImageBitmap()
+    } catch (e: Exception) {
+        println("error: cannot load picture: $url")
+        e.printStackTrace()
+        return ImageBitmap(1, 1)
     }
-    return image.toImageBitmap()
 }
 actual suspend fun readFile(path: String): ByteArray {
     return File(path).readBytes()

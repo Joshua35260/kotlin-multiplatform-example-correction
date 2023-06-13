@@ -26,11 +26,17 @@ class DesktopStorableImage(
 )
 
 actual suspend fun loadPicture(url: String): ImageBitmap {
-    val httpClient = HttpClient()
-    val image: ByteArray = httpClient.use { client ->
-        client.get(url).body()
+    try {
+        val httpClient = HttpClient()
+        val image: ByteArray = httpClient.use { client ->
+            client.get(url).body()
+        }
+        return Image.makeFromEncoded(image).toComposeImageBitmap()
+    } catch (e: Exception) {
+        println("ERROR : cannot load picture $url")
+        e.printStackTrace()
+        return ImageBitmap(1, 1)
     }
-    return Image.makeFromEncoded(image).toComposeImageBitmap()
 }
 
 actual suspend fun readFile(path: String): ByteArray {

@@ -126,6 +126,14 @@ class AndroidImageStorage(
                 stream.flush()
                 stream.close()
             }
+            is PictureData.WildstagramPicture -> {
+                var pictureImage = loadPicture(picture.imageUrl)
+
+                val stream: OutputStream = FileOutputStream(tempFileToShare)
+                pictureImage.asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG,25,stream)
+                stream.flush()
+                stream.close()
+            }
 
             is PictureData.Resource -> {
                 if (!tempFileToShare.exists()) {

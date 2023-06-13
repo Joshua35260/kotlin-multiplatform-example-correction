@@ -35,7 +35,7 @@ abstract class Dependencies {
                 println("START FETCH POKEMONS")
                 var pokemons: List<PictureData.Pokemon> = fetchPokemons()
                 println("POKEMONS returned - " + pokemons)
-                pictures.addAll(0, pokemons)
+                pictures.addAll( pokemons)
                 println("POKEMONS added")
 
             } catch (e: Exception) {
@@ -50,11 +50,9 @@ abstract class Dependencies {
                 println("START FETCH WILDSTAGRAM")
                 val wildstagramService = WildstagramService()
                 var wilderPictures: List<PictureData.WildstagramPicture> = wildstagramService.getAll()
-                pictures.addAll(0, pokemons)
-//                println("POKEMONS returned - " + pokemons)
-//                pictures.addAll(0, pokemons)
-//                println("POKEMONS added")
-
+                println("wilder pictures returned - " + wilderPictures)
+                pictures.addAll(0, wilderPictures)
+                println("wilder pictures added")
             } catch (e: Exception) {
                 e.printStackTrace();
                 println("error fetching wildstagram")
@@ -74,6 +72,9 @@ abstract class Dependencies {
             is PictureData.Pokemon -> {
                 loadPicture(picture.imageUrl)
             }
+            is PictureData.WildstagramPicture -> {
+                loadPicture(picture.imageUrl)
+            }
 
             is PictureData.Camera -> {
                 imageStorage.getImage(picture)
@@ -86,6 +87,9 @@ abstract class Dependencies {
             }
 
             is PictureData.Pokemon -> {
+                loadPicture(picture.imageUrl)
+            }
+            is PictureData.WildstagramPicture -> {
                 loadPicture(picture.imageUrl)
             }
 
@@ -117,6 +121,14 @@ abstract class Dependencies {
                 }
 
                 is PictureData.Pokemon -> {
+                    val edited = picture.copy(
+                        name = name,
+                        description = description,
+                    )
+                    pictures[pictures.indexOf(picture)] = edited
+                    return edited
+                }
+                is PictureData.WildstagramPicture -> {
                     val edited = picture.copy(
                         name = name,
                         description = description,
