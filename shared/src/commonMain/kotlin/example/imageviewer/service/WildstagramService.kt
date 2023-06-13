@@ -77,7 +77,6 @@ class WildstagramService {
                 setBody(
                     MultiPartFormDataContent(
                         formData {
-                            append("name", "louis")
                             append("fileData", bytes, Headers.build {
                                 append(HttpHeaders.ContentType, "image/jpeg")
                                 append(HttpHeaders.ContentDisposition, "filename=\"louis.jpg\"")
