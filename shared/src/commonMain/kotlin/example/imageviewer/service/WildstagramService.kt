@@ -60,7 +60,7 @@ class WildstagramService {
         }
     }
 
-    val token = "METTEZ ICI VOTRE TOKEN"
+    private val token = "4a452580-f4d7-4e34-9ce8-b70c8b18ab79"
     suspend fun pushImage(imageBitmap: ImageBitmap) {
         println("wildstagram service: will POST  on " + url)
 
@@ -71,7 +71,7 @@ class WildstagramService {
             println("SEND UPLOAD")
             val response: HttpResponse = httpClient.post(url + "/upload") {
                 headers {
-                    append(HttpHeaders.Authorization, "Bearer ${token}")
+                    append(HttpHeaders.Authorization, "Bearer $token")
                 }
                 //timeout ( 1000 )
                 setBody(
@@ -79,7 +79,7 @@ class WildstagramService {
                         formData {
                             append("fileData", bytes, Headers.build {
                                 append(HttpHeaders.ContentType, "image/jpeg")
-                                append(HttpHeaders.ContentDisposition, "filename=\"louis.jpg\"")
+                                append(HttpHeaders.ContentDisposition, "filename=\"josh.jpg\"")
                                 append(HttpHeaders.ContentLength, bytes.size)
                             })
                         },

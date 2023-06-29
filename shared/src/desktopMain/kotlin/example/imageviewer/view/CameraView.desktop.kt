@@ -29,6 +29,7 @@ actual fun CameraView(
     modifier: Modifier,
     onCapture: (picture: PictureData.Camera, image: PlatformStorableImage) -> Unit
 ) {
+
     val randomPicture = remember { resourcePictures.random() }
     val imageBitmap = resource(randomPicture.resource).rememberImageBitmap().orEmpty()
     Box(Modifier.fillMaxSize().background(Color.Black)) {
