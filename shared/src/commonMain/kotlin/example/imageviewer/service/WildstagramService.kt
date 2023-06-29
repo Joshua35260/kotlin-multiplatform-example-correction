@@ -60,9 +60,9 @@ class WildstagramService {
         }
     }
 
-    val token = "bfd28f71-a745-4a48-9d59-248498b39dfb"
+    val token = "METTEZ ICI VOTRE TOKEN"
     suspend fun pushImage(imageBitmap: ImageBitmap) {
-        println("PokemonService: will POST  on " + url)
+        println("wildstagram service: will POST  on " + url)
 
         try {
             val bytes: ByteArray = imageBitmap.toByteArray();
